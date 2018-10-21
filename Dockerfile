@@ -1,10 +1,19 @@
-FROM ubuntu:12.04
-MAINTAINER Max Gonzih <gonzih at gmail dot com>
+FROM ubuntu:18.04
+MAINTAINER John Orth <jmorth at gmail dot com>
 
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get -y install lib32gcc1 lib32z1 lib32ncurses5 lib32bz2-1.0 lib32asound2 curl
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    echo steam steam/question select "I AGREE" | debconf-set-selections && \
+    echo steam steam/license note '' | debconf-set-selections
+
+RUN dpkg --add-architecture i386
+
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -y install curl && \
+    apt-get -y install steamcmd && \
+    apt-get -y install libtinfo5:i386 libncurses5:i386 libcurl3-gnutls:i386 && \
+    apt-get clean &&  \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV USER tf2
 
